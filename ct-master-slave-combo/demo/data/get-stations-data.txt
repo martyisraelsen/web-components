@@ -1,0 +1,6 @@
+{"success": true, 
+	"payload": [
+	{"label":"USU Weather Station","value":"0"},
+	{"label":"Peter Sinks Station","value":"1"},
+	{"label":"Logan Airport Weather Station","value":"2"}
+	]}

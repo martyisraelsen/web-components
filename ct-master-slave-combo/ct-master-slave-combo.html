@@ -1,0 +1,89 @@
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../vaadin-combo-box/vaadin-combo-box.html">
+<link rel="import" href="../iron-ajax/iron-ajax.html">
+
+<dom-module id="ct-master-slave-combo">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+    <iron-ajax id="slave-ajax"
+      url="{{slaveUrl}}"
+      handle-as="json"
+      on-response="handleSlaveResponse"
+      debounce-duration="300"></iron-ajax>
+
+    <vaadin-combo-box id="master-combo" on-value-changed="masterValueChanged" items=[[items]]></vaadin-combo-box>
+    <div id="slave-combo-div"></div>
+  </template>
+
+  <script>
+    /**
+     * `ct-master-slave-combo`
+     * Master Slave Combos
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class CtMasterSlaveCombo extends Polymer.Element {
+      static get is() { return 'ct-master-slave-combo'; }
+      static get properties() {
+        return {
+          items: {
+            type: Array,
+            value: []
+          },
+          slaveUrl: {
+            type: String,
+            value: "./slave-combo-data"
+          }
+        };
+      }
+
+      constructor() {
+        super();
+        //console.log("constructor called...")
+        // …
+      }
+
+      connectedCallback() {
+        var me = this;
+        super.connectedCallback();
+
+        //console.log("connectedCallback called...");
+        me.$['master-combo'].addEventListener('item-selected', function(e){ 
+          // create and show slave combo here...
+        });
+      }
+
+      masterValueChanged(event) {
+        var me = this;
+        if (event.detail.value != "") {
+          me.slaveUrl = "./data/"+event.detail.value;
+          me.$['slave-ajax'].generateRequest();
+        }
+      }
+
+      handleSlaveResponse(e) {
+        var me = this;
+
+        while (me.$['slave-combo-div'].hasChildNodes()) {
+          me.$['slave-combo-div'].removeChild(me.$['slave-combo-div'].lastChild);
+        }
+
+        var slaveCombo= document.createElement('vaadin-combo-box');
+        slaveCombo.setAttribute("id","slave-combo");
+        slaveCombo.items = e.detail.response.payload;
+        me.$['slave-combo-div'].append(slaveCombo);
+
+      }
+
+    }
+
+    window.customElements.define(CtMasterSlaveCombo.is, CtMasterSlaveCombo);
+  </script>
+</dom-module>
